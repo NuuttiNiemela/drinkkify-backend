@@ -7,3 +7,6 @@ package-lock.json
 
 # Directory-based project format:
 .idea/
+
+.env
+
