@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www --exec babel-node src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "create": "node ./services/database createTables"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
