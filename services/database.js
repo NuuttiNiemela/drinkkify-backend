@@ -14,6 +14,7 @@ pool.on('connect', () => {
     console.log('connected to database');
 });
 
+
 const createTables = () => {
 
     const createDrinkTable = `DROP TABLE IF EXISTS drinks; 

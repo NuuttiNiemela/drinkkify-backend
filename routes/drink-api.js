@@ -15,7 +15,25 @@ router.route('/')
                 console.log(e.message);
                 res.status(400).send({virheviesti: e.message});
             });
-    });
+    })
+
+    .post((req, res)=> {
+        const newDrink = req.body;
+        drinkservice.addDrink(newDrink)  // Promise
+        .then(id => {
+            const locurl = url.format({
+                protocol: req.protocol,
+                host: req.get('host'),
+                pathname: req.originalUrl + "/" + id
+            });
+            res.setHeader('Location', locurl);
+            newDrink.id = id;
+            res.status(201).send(newDrink);
+        })
+        .catch(e=> {
+            res.status(400).send({virhe: e.message})
+        })
+});
 
 // router.get('/', (req, res) => {
 //     drinkservice.getAllDrinks()
