@@ -8,3 +8,5 @@ CREATE TABLE drinks (
 
 INSERT INTO drinks (drink_name, drink_instructions)
 VALUES  ('Vodka Martini', 'Shaken, not stirred');
+INSERT INTO drinks (drink_name, drink_instructions)
+VALUES  ('Kossu-vissy', 'Sekoita ja nauti!');

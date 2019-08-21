@@ -1,5 +1,7 @@
-
 const { pool } = require('./config')
+const fs = require('fs');
+
+const tablesql = fs.readFileSync('init.sql').toString();
 
 function getDrinks() {
     return pool.connect()
@@ -49,6 +51,16 @@ function addDrink(newdrink) {
         );
 }
 
+function create_tables() {
+    pool.query(tablesql, (error, results) => {
+        if (error) {
+            console.log(error)
+            throw error;
+        }
+        console.log(results);
+    });
+}
+
 
 
 const updateDrink = (request, response) => {
@@ -77,6 +89,8 @@ const updateDrink = (request, response) => {
         response.status(200).send(`Drink deleted with ID: ${id}`)
     })
 }
+
+create_tables();
 
 module.exports = {
     getDrinks,
