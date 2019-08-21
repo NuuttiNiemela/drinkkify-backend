@@ -25,8 +25,7 @@ function getDrinkById (id){
                     .then((data) => {
                         client.release();
                         return data.rows[0];
-                    }
-                    )
+                    })
                     .catch(e => {
                         throw new Error(e.message)
                     })
@@ -44,11 +43,43 @@ function addDrink(newdrink) {
                         }
                     )
                     .catch(e => {
-                        console.log("dbuserservice:post virhe", e.message);
+                        console.log("queries:post virhe", e.message);
                         throw new Error(e.message)
                     })
             }
         );
+}
+
+function updateDrink(id, drinkData) {
+    return pool.connect()
+        .then(client => {
+            return client.query('UPDATE drinks SET drink_name = $1, drink_instructions = $2 WHERE id = $3',
+                [drinkData.drink_name, drinkData.drink_instructions, id])
+                .then((data) => {
+                    client.release();
+                    console.log("Updated:", data.rows);
+                    return drinkData;
+                })
+                .catch( e => {
+                    console.log("queries: put virhe");
+                    throw new Error(e.message);
+                })
+        })
+
+}
+
+function deleteDrink(id) {
+    return pool.connect()
+        .then(client => {
+            return client.query('DELETE FROM drinks WHERE id = $1', [id])
+                .then((data) => {
+                    client.release();
+                    return `"Deleted drink with id" ${id}`;
+                })
+                .catch( e => {
+                    throw new Error(e.message)
+                });
+        })
 }
 
 function create_tables() {
@@ -59,35 +90,6 @@ function create_tables() {
         }
         console.log(results);
     });
-}
-
-
-
-const updateDrink = (request, response) => {
-    const id = parseInt(request.params.id)
-    const { drink_name, drink_instructions } = request.body
-
-    pool.query(
-        'UPDATE drinks SET drink_name = $1, drink_instructions = $2 WHERE id = $3',
-        [drink_name, drink_instructions, id],
-        (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).send(`Drink modified with ID: ${id}`)
-        }
-    )};
-
-
-    const deleteDrink = (request, response) => {
-    const id = parseInt(request.params.id)
-
-    pool.query('DELETE FROM drinks WHERE id = $1', [id], (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).send(`Drink deleted with ID: ${id}`)
-    })
 }
 
 create_tables();
