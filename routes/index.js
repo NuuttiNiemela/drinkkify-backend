@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 // router.put('/drinks/:id', db.updateDrink())
 // router.delete('/drinks:id', db.deleteDrink())
 
-router.route('/drinks')
+router.route('/api/drinks')
     .get((req, res) => {
       db.getDrinks()
           .then(rivit => {
@@ -46,7 +46,7 @@ router.route('/drinks')
           })
     });
 
-router.route('/drinks/:id')
+router.route('/api/drinks/:id')
     .get((req, res) => {
       const id = parseInt(req.params.id);
       db.getDrinkById(id)
@@ -54,10 +54,21 @@ router.route('/drinks/:id')
             res.status(200).send(rivit)
           })
           .catch(e => {
-            consloe.log(e.message);
+            console.log(e.message);
             res.status(400).send({virhe: e.message})
           })
 
+    })
+    .delete((req, res) => {
+        const id = parseInt(req.params.id);
+        db.deleteDrink(id)
+            .then(rivit => {
+                res.status(200).send(rivit)
+            })
+            .catch( e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message})
+            });
     })
 
 module.exports = router;
