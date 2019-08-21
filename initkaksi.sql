@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS drinks;
 DROP TABLE IF EXISTS drinks_recipes;
 DROP TABLE IF EXISTS drinks_ingredients;
 
--- drinkin nimi ja reseptikuvaus
+-- drinkin nimi ja reseptikuvaus.
 CREATE TABLE drinks (
                        id SERIAL PRIMARY KEY,
                        drink_name VARCHAR(255) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE drinks_recipes (
                        ingredients_unit VARCHAR(255)
 );
 
--- vodka id 1, gin id 2, rommi id 3
+-- raaka-aineet, jossa aine ja id. Eli vodka id 1, gin id 2, rommi id 3 jne...
 CREATE TABLE drinks_ingredients (id SERIAL PRIMARY KEY, ingredient_name VARCHAR(255) NOT NULL);
 
 -- Tallenna alkoholit yms raaka-aineet.
@@ -34,11 +34,15 @@ VALUES ('Vodka Martini', 'Shaken, not stirred'),
 
 -- Tallenna reseptit.
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
-VALUES  ((SELECT id from drinks WHERE drink_name='Vodka Martini'), (SELECT id from drinks_ingredients WHERE ingredient_name='Vodka'), 4, 'cl');
+VALUES
+((SELECT id from drinks WHERE drink_name='Vodka Martini'), (SELECT id from drinks_ingredients WHERE ingredient_name='Vodka'), 4, 'cl'),
+((SELECT id from drinks WHERE drink_name='Vodka Martini'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl');
 
-INSERT INTO bar (description, foo_id) VALUES
-    ( 'testing',     (SELECT id from foo WHERE type='blue') ),
-    ( 'another row', (SELECT id from foo WHERE type='red' ) );
+INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
+VALUES
+((SELECT id from drinks WHERE drink_name='Gin Tonic'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
+((SELECT id from drinks WHERE drink_name='Gin Tonic'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
+
 
     CREATE TABLE drinks_recipes (
                        id SERIAL PRIMARY KEY,
@@ -47,3 +51,10 @@ INSERT INTO bar (description, foo_id) VALUES
                        ingredients_amount int,
                        ingredients_unit VARCHAR(255)
 );
+
+INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
+VALUES
+((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
+((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Sugar'), 1, 'cl'),
+((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
+
