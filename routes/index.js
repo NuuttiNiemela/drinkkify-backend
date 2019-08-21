@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const url = require('url');
-const db = require('../services/queries')
+const db = require('../services/queries');
 
 
 
