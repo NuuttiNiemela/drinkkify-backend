@@ -1,7 +1,7 @@
 const { pool } = require('./config')
 const fs = require('fs');
 
-const tablesql = fs.readFileSync('init.sql').toString();
+const tablesql = fs.readFileSync('initkaksi.sql').toString();
 
 function getDrinks() {
     return pool.connect()

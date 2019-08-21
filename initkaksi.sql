@@ -13,10 +13,10 @@ CREATE TABLE drinks (
 -- ainesosan nimi on drinks_ingredients-taulun ID:n lapsi.
 CREATE TABLE drinks_recipes (
                        id SERIAL PRIMARY KEY,
-                       drinks_id int FOREIGN KEY REFERENCES drinks(id),
-                       ingredients_id int FOREIGN KEY REFERENCES drinks_ingredients(id),
+                       drinks_id int,
+                       ingredients_id int,
                        ingredients_amount int,
-                       ingredients_unit VARCHAR(255),
+                       ingredients_unit VARCHAR(255)
 );
 
 -- vodka id 1, gin id 2, rommi id 3
@@ -42,8 +42,8 @@ INSERT INTO bar (description, foo_id) VALUES
 
     CREATE TABLE drinks_recipes (
                        id SERIAL PRIMARY KEY,
-                       drinks_id int FOREIGN KEY REFERENCES drinks(id),
-                       ingredients_id int FOREIGN KEY REFERENCES drinks_ingredients(id),
+                       drinks_id int REFERENCES drinks(id),
+                       ingredients_id int REFERENCES drinks_ingredients(id),
                        ingredients_amount int,
-                       ingredients_unit VARCHAR(255),
+                       ingredients_unit VARCHAR(255)
 );
