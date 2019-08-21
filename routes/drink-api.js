@@ -1,13 +1,24 @@
 var express = require('express');
 var router = express.Router();
-var drinkservice = require('../services/drinkservice')
+const url = require('url');
+const db = require('../services/queries')
 
 
-/* GET users listing. */
 
-router.route('/')
+/* GET home page. */
+router.get('/', function(req, res, next) {
+    res.send('/drinks => GET, POST _______ /drinks/:id => GET, PUT, DELETE')
+});
+
+// router.get('/drinks', db.getDrinks())
+// router.get('/drinks/:id', db.getDrinkById())
+// router.post('/drinks', db.addDrink())
+// router.put('/drinks/:id', db.updateDrink())
+// router.delete('/drinks:id', db.deleteDrink())
+
+router.route('/drinks')
     .get((req, res) => {
-        drinkservice.getAllDrinks()
+        db.getDrinks()
             .then(rivit => {
                 res.status(200).send(rivit);
             })
@@ -19,42 +30,59 @@ router.route('/')
 
     .post((req, res)=> {
         const newDrink = req.body;
-        drinkservice.addDrink(newDrink)  // Promise
-        .then(id => {
-            const locurl = url.format({
-                protocol: req.protocol,
-                host: req.get('host'),
-                pathname: req.originalUrl + "/" + id
-            });
-            res.setHeader('Location', locurl);
-            newDrink.id = id;
-            res.status(201).send(newDrink);
-        })
-        .catch(e=> {
-            res.status(400).send({virhe: e.message})
-        })
-});
+        db.addDrink(newDrink)  // Promise
+            .then(id => {
+                const locurl = url.format({
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    pathname: req.originalUrl + "/" + id
+                });
+                res.setHeader('Location', locurl);
+                newDrink.id = id;
+                res.status(201).send(newDrink);
+            })
+            .catch(e=> {
+                res.status(400).send({virhe: e.message})
+            })
+    });
 
-// router.get('/', (req, res) => {
-//     drinkservice.getAllDrinks()
-//     return res.send(Object.values(drinks));
-// });
-//
-// router.get('/:id', (req, res) => {
-//
-//     return res.send(drinks[req.params.id]);
-// });
-//
-// router.post('/', (req, res) => {
-//     return res.send('Received a POST HTTP method');
-// });
-//
-// router.put('/', (req, res) => {
-//     return res.send('Received a PUT HTTP method');
-// });
-//
-// router.delete('/', (req, res) => {
-//     return res.send('Received a DELETE HTTP method');
-// });
+router.route('/drinks/:id')
+    .get((req, res) => {
+        const id = parseInt(req.params.id);
+        db.getDrinkById(id)
+            .then(rivit => {
+                res.status(200).send(rivit)
+            })
+            .catch(e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message})
+            })
+
+    })
+    .delete((req, res) => {
+        const id = parseInt(req.params.id);
+        db.deleteDrink(id)
+            .then(rivit => {
+                res.status(200).send(rivit)
+            })
+            .catch( e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message})
+            });
+    })
+    .put((req, res) => {
+        const id = parseInt(req.params.id);
+        const drinkData = {drink_name: req.body.drink_name, drink_instructions: req.body.drink_instructions};
+
+        db.updateDrink(id, drinkData)
+            .then(response => {
+                res.status(200).send(response)
+            })
+            .catch( e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message})
+            });
+    })
 
 module.exports = router;
+
