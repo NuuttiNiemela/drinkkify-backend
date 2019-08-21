@@ -12,5 +12,7 @@ CREATE TABLE drinks (
 
 INSERT INTO drinks (drink_name, drink_ingredient1, drink_ingredient2, drink_instructions)
 VALUES  ('Vodka Martini', 'Vodka', 'Martini', 'Shaken, not stirred');
-INSERT INTO drinks (drink_name, drink_ingredient1, drink_ingredient2, drink_instructions)
-VALUES  ('Kossu-vissy', 'Kossu', 'Vissy', 'Sekoita ja nauti!');
+INSERT INTO drinks (drink_name, drink_ingredient1, drink_instructions)
+VALUES  ('Kossu-vissy', 'Kossu', 'Sekoita ja nauti!');
+INSERT INTO drinks (drink_name, drink_ingredient1, drink_ingredient2, drink_ingredient3, drink_instructions)
+VALUES  ('Kova tee', 'Pontikka', 'Tee', 'Sokeri', 'Ykkösellä huiviin ja irvistä');
