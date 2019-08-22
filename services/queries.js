@@ -1,8 +1,9 @@
 const { pool } = require('./config')
 const fs = require('fs');
 
-const tablesql = fs.readFileSync('init.sql').toString();
+const tablesql = fs.readFileSync('initkaksi.sql').toString();
 
+// Hakee drinkin nimen ja reseptin taulusta drinks.
 function getDrinks() {
     return pool.connect()
         .then(client => {
@@ -18,6 +19,25 @@ function getDrinks() {
             }
         );
 }
+
+// Hakee drinkin nimen, reseptin ja raaka-aineet käyttäen useampia tauluja. Sekavassa tilassa.
+function getDrinksWithJoin() {
+    const query = 'SELECT * FROM drinks_ingredients NATURAL JOIN drinks';
+    return pool.connect()
+        .then(client => {
+                return client.query(query)
+                    .then((data) => {
+                            client.release();
+                            return data.rows;
+                        }
+                    )
+                    .catch(e => {
+                        throw new Error(e.message)
+                    })
+            }
+        );
+}
+
 function getDrinkById (id){
     return pool.connect()
         .then(client => {
@@ -99,8 +119,9 @@ module.exports = {
     addDrink,
     getDrinkById,
     updateDrink,
-    deleteDrink
-}
+    deleteDrink,
+    getDrinksWithJoin
+};
 
 
 
