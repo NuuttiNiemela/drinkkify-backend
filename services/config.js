@@ -1,5 +1,7 @@
 require('dotenv').config();
+const fs = require('fs');
 
+const tablesql = fs.readFileSync('initkaksi.sql').toString();
 
 const { Pool } = require('pg');
 
@@ -11,5 +13,17 @@ const pool = new Pool({
     connectionString: isProduction ? process.env.DATABASE_URL : connectionString,
     ssl: isProduction,
 })
+
+function create_tables() {
+    pool.query(tablesql, (error, results) => {
+        if (error) {
+            console.log(error)
+            throw error;
+        }
+        console.log(results);
+    });
+}
+
+create_tables();
 
 module.exports = { pool }

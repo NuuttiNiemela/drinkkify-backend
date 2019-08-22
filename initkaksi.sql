@@ -13,10 +13,10 @@ CREATE TABLE drinks (
 -- ainesosan nimi on drinks_ingredients-taulun ID:n lapsi.
 CREATE TABLE drinks_recipes (
                        id SERIAL PRIMARY KEY,
-                       drinks_id int FOREIGN KEY REFERENCES drinks(id),
-                       ingredients_id int FOREIGN KEY REFERENCES drinks_ingredients(id),
+                       drinks_id int,
+                       ingredients_id int,
                        ingredients_amount int,
-                       ingredients_unit VARCHAR(255),
+                       ingredients_unit VARCHAR(255)
 );
 
 -- raaka-aineet, jossa aine ja id. Eli vodka id 1, gin id 2, rommi id 3 jne...
@@ -43,8 +43,4 @@ VALUES
 ((SELECT id from drinks WHERE drink_name='Gin Tonic'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Gin Tonic'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
 
-INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
-VALUES
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Sugar'), 1, 'cl'),
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
+

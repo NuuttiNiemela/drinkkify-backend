@@ -10,12 +10,6 @@ router.get('/', function(req, res, next) {
     res.send('/drinks => GET, POST _______ /drinks/:id => GET, PUT, DELETE')
 });
 
-// router.get('/drinks', db.getDrinks())
-// router.get('/drinks/:id', db.getDrinkById())
-// router.post('/drinks', db.addDrink())
-// router.put('/drinks/:id', db.updateDrink())
-// router.delete('/drinks:id', db.deleteDrink())
-
 router.route('/drinks')
     .get((req, res) => {
         db.getDrinks()
@@ -83,6 +77,5 @@ router.route('/drinks/:id')
                 res.status(400).send({virhe: e.message})
             });
     })
-
 module.exports = router;
 
