@@ -12,7 +12,6 @@ CREATE TABLE drinks (
 -- raaka-aineet, jossa aine ja id. Eli vodka id 1, gin id 2, rommi id 3 jne...
 CREATE TABLE drinks_ingredients (id SERIAL PRIMARY KEY, ingredient_name VARCHAR(255) NOT NULL);
 
-
 -- reseptin ainekset, cocktailin nimi on drinks-taulun ID:n lapsi.
 -- ainesosan nimi on drinks_ingredients-taulun ID:n lapsi.
 CREATE TABLE drinks_recipes (
@@ -51,4 +50,5 @@ VALUES
 ((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Sugar'), 1, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
+
 
