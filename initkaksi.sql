@@ -44,17 +44,3 @@ VALUES
 ((SELECT id from drinks WHERE drink_name='Gin Tonic'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
 
 
-    CREATE TABLE drinks_recipes (
-                       id SERIAL PRIMARY KEY,
-                       drinks_id int REFERENCES drinks(id),
-                       ingredients_id int REFERENCES drinks_ingredients(id),
-                       ingredients_amount int,
-                       ingredients_unit VARCHAR(255)
-);
-
-INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
-VALUES
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Gin'), 4, 'cl'),
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Sugar'), 1, 'cl'),
-((SELECT id from drinks WHERE drink_name='Tom Collins'), (SELECT id from drinks_ingredients WHERE ingredient_name='Tonic'), 12, 'cl');
-

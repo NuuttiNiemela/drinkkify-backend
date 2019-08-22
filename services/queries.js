@@ -1,12 +1,10 @@
 const { pool } = require('./config')
-const fs = require('fs');
 
-const tablesql = fs.readFileSync('initkaksi.sql').toString();
 
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks')
+                return client.query('SELECT * FROM drinks_recipes')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -82,24 +80,30 @@ function deleteDrink(id) {
         })
 }
 
-function create_tables() {
-    pool.query(tablesql, (error, results) => {
-        if (error) {
-            console.log(error)
-            throw error;
-        }
-        console.log(results);
-    });
-}
+function getIngredients() {
+    return pool.connect()
+        .then(client => {
+                return client.query('SELECT * FROM drinks_ingredients')
+                    .then((data) => {
+                            client.release();
+                            return data.rows;
+                        }
+                    )
+                    .catch(e => {
+                        throw new Error(e.message)
+                    })
+            }
+        );
 
-create_tables();
+}
 
 module.exports = {
     getDrinks,
     addDrink,
     getDrinkById,
     updateDrink,
-    deleteDrink
+    deleteDrink,
+    getIngredients
 }
 
 
