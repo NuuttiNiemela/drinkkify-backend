@@ -51,7 +51,7 @@ function getDrinkById (id){
                         throw new Error(e.message)
                     })
             })
-        }
+}
 function addDrink(newdrink) {
     const insertStmt = "INSERT INTO drinks(drink_name, drink_instructions) VALUES($1, $2)  RETURNING id";
     return pool.connect()
@@ -117,8 +117,22 @@ function getIngredients() {
                     })
             }
         );
-
 }
+function getIngredientByName (ingredientName){
+    return pool.connect()
+        .then(client => {
+            return client.query('SELECT * FROM drinks_ingredients WHERE ingredient_name ILIKE $1', [ingredientName + '%'])
+                .then((data) => {
+                    client.release();
+                    return data.rows[0];
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
+
 
 module.exports = {
     getDrinks,
@@ -127,9 +141,9 @@ module.exports = {
     updateDrink,
     deleteDrink,
     getDrinksWithJoin,
-    getIngredients
+    getIngredients,
+    getIngredientByName
 };
-
 
 
 
