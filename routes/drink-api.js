@@ -16,6 +16,7 @@ router.get('/', function(req, res, next) {
 router.route('/drinks')
     .get((req, res) => {
         db.getDrinks()
+        // db.getDrinksWithJoin()
             .then(rivit => {
                 res.status(200).send(rivit);
             })
