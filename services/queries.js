@@ -4,7 +4,7 @@ const { pool } = require('./config')
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks_recipes')
+                return client.query('SELECT * FROM drinks')
                     .then((data) => {
                             client.release();
                             return data.rows;
