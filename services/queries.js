@@ -59,6 +59,7 @@ function getDrinkById (id){
                     })
             })
 }
+
 function getDrinkByName (drinkName){
     const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, \n' +
         'json_agg(json_build_object(\'id\', di.id, \'ingredient_name\', di.ingredient_name, \'amount\', dr.ingredients_amount, \'unit\', dr.ingredients_unit)) \n' +
@@ -82,6 +83,7 @@ function getDrinkByName (drinkName){
                 })
         })
 }
+
 function addDrink(newdrink) {
     const insertStmt = "INSERT INTO drinks(drink_name, drink_instructions) VALUES($1, $2)  RETURNING id";
     return pool.connect()
@@ -162,8 +164,6 @@ function getIngredientByName (ingredientName){
         })
 }
 
-
-
 module.exports = {
     getDrinks,
     addDrink,
@@ -175,7 +175,3 @@ module.exports = {
     getIngredients,
     getIngredientByName
 };
-
-
-
-
