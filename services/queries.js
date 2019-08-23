@@ -8,7 +8,7 @@ const tablesql = fs.readFileSync('initkaksi.sql').toString();
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks_recipes')
+                return client.query('SELECT * FROM drinks')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -23,10 +23,16 @@ function getDrinks() {
 
 // Hakee drinkin nimen, reseptin ja raaka-aineet käyttäen useampia tauluja. Sekavassa tilassa.
 function getDrinksWithJoin() {
-    const query = 'SELECT * FROM drinks_ingredients NATURAL JOIN drinks';
+    const query1 = 'SELECT * FROM drinks';
+    const query2 = 'SELECT * FROM drinks NATURAL JOIN drinks_ingredients';
+    const query3 = 'SELECT drinks.drink_name, drinks_recipes.ingredients_id FROM drinks JOIN drinks_recipes ON drinks.id = drinks_recipes.drinks_id';
+    const query4 = 'SELECT drinks.drink_name, drinks_recipes.ingredients_id FROM drinks LEFT JOIN drinks_recipes ON drinks.id = drinks_recipes.drinks_id';
+    const query5 = 'SELECT * FROM drinks_recipes WHERE drinks_id IN (SELECT id FROM drinks WHERE drink_name = "Gin Tonic")';
+
+
     return pool.connect()
         .then(client => {
-                return client.query(query)
+                return client.query(query5)
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -131,8 +137,6 @@ function getIngredientByName (ingredientName){
                 })
         })
 }
-
-
 
 module.exports = {
     getDrinks,
