@@ -72,7 +72,7 @@ function getDrinkByName (drinkName){
 
     return pool.connect()
         .then(client => {
-            return client.query(insertStmt, [drinkName + '%'])
+            return client.query(insertStmt, ['%' + drinkName + '%'])
                 .then((data) => {
                     client.release();
                     console.log(data);
