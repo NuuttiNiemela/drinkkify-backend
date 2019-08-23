@@ -8,7 +8,13 @@ const tablesql = fs.readFileSync('initkaksi.sql').toString();
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks')
+                return client.query('SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+                    'AS ingredients \n' +
+                    'FROM drinks_recipes dr \n' +
+                    'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+                    'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+                    'GROUP BY \n' +
+                    'd.id, d.drink_name, d.drink_instructions')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -23,7 +29,7 @@ function getDrinks() {
 
 // Hakee drinkin nimen, reseptin ja raaka-aineet käyttäen useampia tauluja. Sekavassa tilassa.
 function getDrinksWithJoin() {
-    const query = 'SELECT * FROM drinks_ingredients NATURAL JOIN drinks';
+    const query = 'SELECT drink_name, drink_instructions ';
     return pool.connect()
         .then(client => {
                 return client.query(query)
@@ -53,13 +59,21 @@ function getDrinkById (id){
             })
 }
 function getDrinkByName (drinkName){
+    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+        'AS ingredients \n' +
+        'FROM drinks_recipes dr \n' +
+        'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+        'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+        'WHERE d.drink_name ILIKE $1 GROUP BY \n' +
+        'd.id, d.drink_name, d.drink_instructions';
+
     return pool.connect()
         .then(client => {
-            return client.query('SELECT * FROM drinks WHERE drink_name ILIKE $1', [drinkName + '%'])
+            return client.query(insertStmt, [drinkName + '%'])
                 .then((data) => {
                     client.release();
                     console.log(data);
-                    return data.rows[0];
+                    return data.rows;
                 })
                 .catch(e => {
                     throw new Error(e.message)
