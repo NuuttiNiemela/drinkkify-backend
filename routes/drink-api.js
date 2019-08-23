@@ -7,10 +7,11 @@ const db = require('../services/queries')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.send('<p>/drinks => GET, POST</p>' +
-        '<p>/drinks/:id => GET, PUT, DELETE BY ID </p>' +
-        '<p>/ingredients => GET</p>' +
-        '<p>/ingredients => GET with query: key: i_name, value: whatever</p>')
+    res.send('<p>/api/drinks => GET, POST</p>' +
+        '<p>/api/drinks/:id => GET, PUT, DELETE BY ID </p>' +
+        '<p>/api/drinks/haku?name="kirjoita"</p>' +
+        '<p>/api/ingredients => GET</p>' +
+        '<p>/api/ingredients => GET with query: key: i_name, value: whatever</p>')
 });
 
 router.route('/drinks')
@@ -44,7 +45,7 @@ router.route('/drinks')
             })
     });
 
-router.route('/drinks/:id')
+router.route('/drinks/actionsbyid/:id')
     .get((req, res) => {
         const id = parseInt(req.params.id);
         db.getDrinkById(id)
@@ -82,6 +83,24 @@ router.route('/drinks/:id')
             });
     })
 
+router.route('/drinks/haku')
+    .get((req, res) => {
+        const drinkName = req.query.name;
+        console.log(drinkName);
+        db.getDrinkByName(drinkName)
+            .then(response => {
+                console.log(response)
+                res.status(200).send(response);
+            })
+            .catch( e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message});
+            })
+
+    })
+
+
+
 router.route('/ingredients/search')
     .get((req, res) => {
         db.getIngredientByName(req.query.i_name)
@@ -90,7 +109,7 @@ router.route('/ingredients/search')
                 res.status(200).send(response);
             })
             .catch( e => {
-                consle.log(e.message);
+                console.log(e.message);
                 res.status(400).send({virhe: e.message});
             })
 

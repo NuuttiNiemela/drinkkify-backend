@@ -8,7 +8,13 @@ const tablesql = fs.readFileSync('initkaksi.sql').toString();
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks')
+                return client.query('SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+                    'AS ingredients \n' +
+                    'FROM drinks_recipes dr \n' +
+                    'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+                    'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+                    'GROUP BY \n' +
+                    'd.id, d.drink_name, d.drink_instructions')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -23,16 +29,16 @@ function getDrinks() {
 
 // Hakee drinkin nimen, reseptin ja raaka-aineet käyttäen useampia tauluja. Sekavassa tilassa.
 function getDrinksWithJoin() {
+    const query = 'SELECT drink_name, drink_instructions ';
     const query1 = 'SELECT * FROM drinks';
     const query2 = 'SELECT * FROM drinks NATURAL JOIN drinks_ingredients';
     const query3 = 'SELECT drinks.drink_name, drinks_recipes.ingredients_id FROM drinks JOIN drinks_recipes ON drinks.id = drinks_recipes.drinks_id';
     const query4 = 'SELECT drinks.drink_name, drinks_recipes.ingredients_id FROM drinks LEFT JOIN drinks_recipes ON drinks.id = drinks_recipes.drinks_id';
     const query5 = 'SELECT * FROM drinks_recipes WHERE drinks_id IN (SELECT id FROM drinks WHERE drink_name = "Gin Tonic")';
 
-
     return pool.connect()
         .then(client => {
-                return client.query(query5)
+                return client.query(query)
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -58,6 +64,30 @@ function getDrinkById (id){
                     })
             })
 }
+
+function getDrinkByName (drinkName){
+    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+        'AS ingredients \n' +
+        'FROM drinks_recipes dr \n' +
+        'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+        'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+        'WHERE d.drink_name ILIKE $1 GROUP BY \n' +
+        'd.id, d.drink_name, d.drink_instructions';
+
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [drinkName + '%'])
+                .then((data) => {
+                    client.release();
+                    console.log(data);
+                    return data.rows;
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
 function addDrink(newdrink) {
     const insertStmt = "INSERT INTO drinks(drink_name, drink_instructions) VALUES($1, $2)  RETURNING id";
     return pool.connect()
@@ -144,11 +174,8 @@ module.exports = {
     getDrinkById,
     updateDrink,
     deleteDrink,
+    getDrinkByName,
     getDrinksWithJoin,
     getIngredients,
     getIngredientByName
 };
-
-
-
-
