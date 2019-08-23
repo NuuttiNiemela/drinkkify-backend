@@ -8,7 +8,8 @@ const tablesql = fs.readFileSync('initkaksi.sql').toString();
 function getDrinks() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+                return client.query('SELECT d.id, d.drink_name, d.drink_instructions, \n' +
+                    'json_agg(json_build_object(\'id\', di.id, \'ingredient_name\', di.ingredient_name, \'amount\', dr.ingredients_amount, \'unit\', dr.ingredients_unit)) \n' +
                     'AS ingredients \n' +
                     'FROM drinks_recipes dr \n' +
                     'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
@@ -59,7 +60,8 @@ function getDrinkById (id){
             })
 }
 function getDrinkByName (drinkName){
-    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, array_agg(di.ingredient_name) \n' +
+    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, \n' +
+        'json_agg(json_build_object(\'id\', di.id, \'ingredient_name\', di.ingredient_name, \'amount\', dr.ingredients_amount, \'unit\', dr.ingredients_unit)) \n' +
         'AS ingredients \n' +
         'FROM drinks_recipes dr \n' +
         'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
