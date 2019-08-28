@@ -28,8 +28,10 @@ router.route('/drinks')
 
     .post((req, res)=> {
         const newDrink = req.body;
-        db.addDrink(newDrink)  // Promise
+        console.log(newDrink);
+        db.addDrinkRecipe(newDrink)  // Promise
             .then(id => {
+                console.log('Tässä on addRinkRecipen iidee' + id)
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
@@ -37,10 +39,10 @@ router.route('/drinks')
                 });
                 res.setHeader('Location', locurl);
                 newDrink.id = id;
-                res.status(201).send(newDrink);
+                res.status(201).send(newDrink.id);
             })
             .catch(e=> {
-                res.status(400).send({virhe: e.message})
+                res.status(400).send({virhe_recipe: e.message})
             })
     });
 
@@ -122,6 +124,24 @@ router.route('/ingredients')
                 res.status(400).send({virheviesti: e.message});
             });
     })
+    .post((req, res)=> {
+        const newIngredient = req.body;
+        db.addIngredient(newIngredient)  // Promise
+            .then(id => {
+                const locurl = url.format({
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    pathname: req.originalUrl + "/" + id
+                });
+                res.setHeader('Location', locurl);
+                newIngredient.id = id;
+                res.status(201).send(newIngredient.id);
+            })
+            .catch(e=> {
+                res.status(400).send({virhe: e.message})
+            })
+    });
+
 
 router.route('/cabinet')
     .get((req, res) => {

@@ -81,23 +81,56 @@ function getDrinkByName (drinkName){
 }
 
 function addDrink(newdrink) {
-    const insertStmt = "INSERT INTO drinks(drink_name, drink_instructions) VALUES($1, $2)  RETURNING id";
+
+    const insertStmt = "INSERT INTO drinks(drink_name, drink_instructions) VALUES($1, $2) RETURNING id";
+
     return pool.connect()
         .then(client => {
                 return client.query(insertStmt, [newdrink.drink_name, newdrink.drink_instructions])
-                    .then((vastaus) => {
+                    .then((data) => {
                             client.release();
-                            console.log("Insertoitu vastaus", vastaus.rows);
-                            return vastaus.rows[0].id;
+                            console.log("data rows: ", data.rows[0]);
+                            return data.rows[0];
                         }
                     )
                     .catch(e => {
+                        console.log(newdrink)
                         console.log("queries:post virhe", e.message);
                         throw new Error(e.message)
                     })
             }
         );
 }
+
+async function addDrinkRecipe(newDrink) {
+    let drinkId = -1
+    console.log("ingredientin osa: " + newDrink.drink_ingredient);
+    await addDrink(newDrink)
+        .then(response => {
+            drinkId = response.id;
+        })
+        .catch(e=>{
+            throw new Error('Virhe drinkin luonnissa: nimi, resepti..' + e.message)
+        })
+
+    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2), 4, \'cl\') RETURNING id';
+
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%'])
+                .then((data) => {
+                    client.release();
+                    console.log("Created new drink recipe", data.rows);
+                    return data.rows[0];
+                })
+                .catch(e=> {
+                    console.log("Creating new drink recipe failed", e.message);
+                    throw new Error(e.message);
+                })
+        })
+}
+
+
 
 function updateDrink(id, drinkData) {
     return pool.connect()
@@ -149,15 +182,36 @@ function getIngredients() {
 function getIngredientByName (ingredientName){
     return pool.connect()
         .then(client => {
-            return client.query('SELECT * FROM drinks_ingredients WHERE ingredient_name ILIKE $1', [ingredientName + '%'])
+            return client.query('SELECT * FROM drinks_ingredients WHERE ingredient_name ILIKE $1', ['%' + ingredientName + '%'])
                 .then((data) => {
                     client.release();
-                    return data.rows[0];
+                    return data.rows;
                 })
                 .catch(e => {
                     throw new Error(e.message)
                 })
         })
+
+}
+
+function addIngredient(newIngredient) {
+
+    const insertStmt = "INSERT INTO drinks_ingredients(id, ingredient_name) VALUES($1, $2) RETURNING id";
+    return pool.connect()
+        .then(client => {
+                return client.query(insertStmt, [newIngderient.ingredient_name])
+                    .then((vastaus) => {
+                            client.release();
+                            console.log("Insertoitu vastaus", vastaus.rows);
+                            return vastaus.rows[0].id;
+                        }
+                    )
+                    .catch(e => {
+                        console.log("queries:post virhe", e.message);
+                        throw new Error(e.message)
+                    })
+            }
+        );
 }
 
 module.exports = {
@@ -168,6 +222,8 @@ module.exports = {
     deleteDrink,
     getDrinkByName,
     getDrinksWithJoin,
+    addDrinkRecipe,
     getIngredients,
-    getIngredientByName
+    getIngredientByName,
+    addIngredient
 };
