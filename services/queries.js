@@ -29,8 +29,15 @@ function getDrinks() {
 }
 
 // Hakee drinkin nimen, reseptin ja raaka-aineet käyttäen useampia tauluja. Sekavassa tilassa.
-function getDrinksWithJoin() {
-    const query = 'SELECT drink_name, drink_instructions ';
+function getDoableDrinks(cabinet_ingredients) {
+    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, \n' +
+        'json_agg(json_build_object(\'id\', di.id, \'ingredient_name\', di.ingredient_name, \'amount\', dr.ingredients_amount, \'unit\', dr.ingredients_unit)) \n' +
+        'AS ingredients \n' +
+        'FROM drinks_recipes dr \n' +
+        'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+        'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+        'WHERE d.drink_name ILIKE $1 GROUP BY \n' +
+        'd.id, d.drink_name, d.drink_instructions';
     return pool.connect()
         .then(client => {
                 return client.query(query)
