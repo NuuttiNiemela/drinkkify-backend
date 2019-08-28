@@ -17,7 +17,7 @@ const pool = new Pool({
 function create_tables() {
     pool.query(tablesql, (error, results) => {
         if (error) {
-            console.log(error)
+            console.log(error.message)
             throw error;
         }
         console.log(results);
