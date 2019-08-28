@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS drinks_ingredients CASCADE;
 
 -- drinkin nimi ja reseptikuvaus.
 CREATE TABLE drinks (
-                       id SERIAL PRIMARY KEY,
-                       drink_name VARCHAR(255) NOT NULL,
-                       drink_instructions VARCHAR(255) NOT NULL
+                        id SERIAL PRIMARY KEY,
+                        drink_name VARCHAR(255) NOT NULL,
+                        drink_instructions VARCHAR(255) NOT NULL
 );
 
 -- raaka-aineet, jossa aine ja id. Eli vodka id 1, gin id 2, rommi id 3 jne...
@@ -15,13 +15,13 @@ CREATE TABLE drinks_ingredients (id SERIAL PRIMARY KEY, ingredient_name VARCHAR(
 -- reseptin ainekset, cocktailin nimi on drinks-taulun ID:n lapsi.
 -- ainesosan nimi on drinks_ingredients-taulun ID:n lapsi.
 CREATE TABLE drinks_recipes (
-                       id SERIAL PRIMARY KEY,
-                       drinks_id INTEGER NOT NULL,
-                       ingredients_id INTEGER NOT NULL,
-                       ingredients_amount int,
-                       ingredients_unit VARCHAR(255),
-                       FOREIGN KEY (drinks_id) REFERENCES drinks(id) ON DELETE CASCADE,
-                       FOREIGN KEY (ingredients_id) REFERENCES drinks_ingredients(id) ON DELETE CASCADE
+                                id SERIAL PRIMARY KEY,
+                                drinks_id INTEGER NOT NULL,
+                                ingredients_id INTEGER NOT NULL,
+                                ingredients_amount int,
+                                ingredients_unit VARCHAR(255),
+                                FOREIGN KEY (drinks_id) REFERENCES drinks(id) ON DELETE CASCADE,
+                                FOREIGN KEY (ingredients_id) REFERENCES drinks_ingredients(id) ON DELETE CASCADE
 );
 
 -- Tallenna alkoholit yms raaka-aineet.
@@ -127,7 +127,6 @@ INSERT INTO drinks_ingredients (ingredient_name) VALUES
 ('White wine'),
 ('Wine');
 
-
 INSERT INTO drinks_ingredients (ingredient_name) VALUES
 ('Sugar'), ('Salt'), ('Lime'), ('Lemon'), ('Black pepper'), ('Peach pure'), ('Soda'), ('Coke'), ('Lemon soda'), ('Orange juice'), ('Tonic'),
 ('Tomato juice'), ('Apple juice'), ('Lime juice'), ('Lemon juice'), ('Cucumber'), ('Strawberry pure'), ('Tonic water'), ('Ginger Ale'),
@@ -142,7 +141,7 @@ INSERT INTO drinks (drink_name, drink_instructions)
 VALUES
 ('Vodka Martini', 'Shaken, not stirred. Find your inner Daniel Craig.'),
 ('Gin Tonic', 'Mix n Match! Hipster points for the innovative use of cucumber, cranberries and other garnish.'),
-('Tom Collins', 'Serve chilled! What could go wrong?'),
+('Tom Collins', 'Build in glass.Serve chilled! What could go wrong?'),
 ('Bellini', 'Ruin your champagne or prosecco with a splash of peach pure. Use white ones when available, preferably from Italy.'),
 ('Screwdriver', 'Take some vodka, mix with orange juice, add some ice, enjoy and think of the 1990s.'),
 ('Kossu-Kola', 'Mikä voisi mennä pieleen? Nyt erikoismerkkien kanssa!'),
@@ -155,7 +154,6 @@ VALUES
 ('Between the sheets', 'Shake hard and fine strain.'),
 ('Black Russian', 'Pour slowly and stir.'),
 ('Blood and Sand', 'Shake and fine strain.'),
-('Aviation', 'Shake hard, fine strain.'),
 ('Bloody Mary', 'Roll ingredients, strain into glass'),
 ('Blue Moon', 'Shake hard, fine strain.'),
 ('Raspberry Boulevard', 'Stir in mixing glass.'),
@@ -232,7 +230,6 @@ VALUES
 ('Sidecar', 'Shake hard and strain.'),
 ('Singapore Sling', 'Shake first ingredients, top with soda, drizzle Cherry Brandy on top.'),
 ('Tequila Sunrise', 'Build in glass.'),
-('Tom Collins', 'Build in glass.'),
 ('Tommys Margarita', 'Shake and fine strain.'),
 ('Treacle', 'Stir in glass, float apple juice.'),
 ('Twinkle', 'Build in glass.'),
