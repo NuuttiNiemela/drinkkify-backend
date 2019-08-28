@@ -1,9 +1,5 @@
 const { pool } = require('./config');
 
-const fs = require('fs');
-const tablesql = fs.readFileSync('initkaksi.sql').toString();
-
-
 // Hakee drinkin nimen ja reseptin taulusta drinks.
 function getDrinks() {
     return pool.connect()
