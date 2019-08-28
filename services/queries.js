@@ -93,7 +93,7 @@ function addDrink(newdrink) {
                 return client.query(insertStmt, [newdrink.drink_name, newdrink.drink_instructions])
                     .then((data) => {
                             client.release();
-                            console.log("Insertoitu vastaus", data.rows[0]);
+                            console.log("data rows: ", data.rows[0]);
                             return data.rows[0];
                         }
                     )
@@ -109,13 +109,12 @@ function addDrink(newdrink) {
 async function addDrinkRecipe(newDrink) {
     let drinkId = -1
     console.log("ingredientin osa: " + newDrink.drink_ingredient);
-
     await addDrink(newDrink)
         .then(response => {
             drinkId = response.id;
         })
         .catch(e=>{
-            throw new Error("Virhe drinkin luonnissa: nimi, resepti..")
+            throw new Error('Virhe drinkin luonnissa: nimi, resepti..' + e.message)
         })
 
     const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2), 4, \'cl\') RETURNING id';
