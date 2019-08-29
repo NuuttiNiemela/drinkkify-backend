@@ -162,9 +162,9 @@ router.route('/ingredients')
             })
     });
 
-router.route('/cabinet',verifyToken)
+router.route('/cabinetverify/:email',verifyToken)
     .get((req, res) => {
-        db.getIngredients()
+        db.getOwnIngredients(req.params.email)
             .then(rivit => {
                 res.status(200).send(rivit);
             })
@@ -176,18 +176,18 @@ router.route('/cabinet',verifyToken)
 
 router.route('/user')
     .post((req, res) => {
-        const newDrink = req.body;
-        db.addDrinkRecipe(newDrink)  // Promise
-            .then(id => {
-                console.log('Tässä on addRinkRecipen iidee' + id)
+        const newUser = req.body;
+        db.addUser(newUser)  // Promise
+            .then(uid => {
+                console.log('Tässä on addUserin iidee' + uid)
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
-                    pathname: req.originalUrl + "/" + id
+                    pathname: req.originalUrl + "/" + uid
                 });
                 res.setHeader('Location', locurl);
-                newDrink.id = id;
-                res.status(201).send(newDrink.id);
+                newUser.id = uid;
+                res.status(201).send(newUser.id);
             })
             .catch(e=> {
                 res.status(400).send({virhe_recipe: e.message})
