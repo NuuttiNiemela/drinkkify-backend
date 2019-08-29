@@ -120,8 +120,6 @@ router.route('/drinks/haku')
 
     })
 
-
-
 router.route('/ingredients/search')
     .get((req, res) => {
         db.getIngredientByName(req.query.i_name)
@@ -195,6 +193,31 @@ router.route('/user')
                 res.status(400).send({virhe_recipe: e.message})
             })
     })
+
+router.route('/cabinet')
+    .get((req, res) => {
+        db.getIngredients()
+            .then(rivit => {
+                res.status(200).send(rivit);
+            })
+            .catch(e => {
+                console.log(e.message);
+                res.status(400).send({virheviesti: e.message});
+            });
+    })
+    .post((req, res)=> {
+        const ingredient = req.body;
+        db.addToCabinet(ingredient)  // Promise
+            .then(response => {
+                ingredient.id = response;
+                res.status(201).json(ingredient);
+            })
+            .catch(e=> {
+                res.status(400).send({adding_ingredient_to_cabinet_: e.message})
+            })
+    });
+
+
 
 module.exports = router;
 
