@@ -218,6 +218,10 @@ function addIngredient(newIngredient) {
         );
 }
 
+function addUser(u) {
+
+}
+
 module.exports = {
     getDrinks,
     addDrink,
