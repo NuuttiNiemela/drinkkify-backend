@@ -3,8 +3,6 @@ var router = express.Router();
 const url = require('url');
 const db = require('../services/queries')
 
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
     res.send('<p>/api/drinks => GET, POST</p>' +
@@ -145,7 +143,7 @@ router.route('/ingredients')
 
 router.route('/cabinet')
     .get((req, res) => {
-        db.getIngredients()
+        db.getDrinkByCabinet
             .then(rivit => {
                 res.status(200).send(rivit);
             })

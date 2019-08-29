@@ -11,7 +11,7 @@ function getDrinks() {
                     'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
                     'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
                     'GROUP BY \n' +
-                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.id')
+                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.drink_name')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -201,9 +201,10 @@ function getIngredientByName (ingredientName){
 
 }
 
+// Lisää aineksen tauluun drinks_ingredients.
 function addIngredient(newIngredient) {
-
-    const insertStmt = "INSERT INTO drinks_ingredients(id, ingredient_name) VALUES($1, $2) RETURNING id";
+// id poistettu, koska serial primary key
+    const insertStmt = "INSERT INTO drinks_ingredients(ingredient_name) VALUES($1) RETURNING id";
     return pool.connect()
         .then(client => {
                 return client.query(insertStmt, [newIngderient.ingredient_name])
@@ -221,6 +222,46 @@ function addIngredient(newIngredient) {
         );
 }
 
+// ----- CABINET - KAMAA: -----
+
+// hae tietyn käyttäjän cabinetin sisältö
+function getDrinkByCabinet (uid){
+    return pool.connect()
+        .then(client => {
+            return client.query('SELECT * FROM cabinet WHERE users_id = $1', [uid])
+                .then((data) => {
+                    client.release();
+                    return data.rows[0];
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
+// Lisää aineksen tauluun cabinet - ID asioita pitää vielä säätää.
+function addIngredientToCabinet(userID, newIngredient) {
+    const insertStmt =
+        "INSERT INTO cabinet(users_id, ingredients_id) VALUES($1, (SELECT id from drinks_ingredients WHERE ingredient_name = $2), [userID, newIngredient]) " +
+        "RETURNING ingredients_id";
+    return pool.connect()
+        .then(client => {
+                return client.query(insertStmt, [newIngderient.ingredients_id])
+                    .then((vastaus) => {
+                            client.release();
+                            console.log("Insertoitu vastaus", vastaus.rows);
+                            return vastaus.rows[0].id;
+                        }
+                    )
+                    .catch(e => {
+                        console.log("queries:post virhe", e.message);
+                        throw new Error(e.message)
+                    })
+            }
+        );
+}
+
+
 module.exports = {
     getDrinks,
     addDrink,
@@ -232,5 +273,7 @@ module.exports = {
     addDrinkRecipe,
     getIngredients,
     getIngredientByName,
-    addIngredient
+    addIngredient,
+    getDrinkByCabinet,
+    addIngredientToCabinet
 };
