@@ -11,7 +11,7 @@ function getDrinks() {
                     'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
                     'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
                     'GROUP BY \n' +
-                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.id')
+                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.drink_name')
                     .then((data) => {
                             client.release();
                             return data.rows;
