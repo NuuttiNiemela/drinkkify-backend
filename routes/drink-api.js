@@ -2,6 +2,26 @@ var express = require('express');
 var router = express.Router();
 const url = require('url');
 const db = require('../services/queries')
+const admin = require('../firebase-admin/admin');
+
+async function verifyToken(req, res, next) {
+    const idToken = req.headers.authorization;
+
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+        if (decodedToken) {
+            req.body.uid = decodedToken.uid;
+
+            return next();
+        } else {
+            return res.status(401).send("You're not logged in!");
+        }
+    } catch (e) {
+        return res.status(401).send("You're not logged in!");
+    }
+}
+
 
 
 
@@ -142,6 +162,37 @@ router.route('/ingredients')
             })
     });
 
+router.route('/cabinetverify/:email',verifyToken)
+    .get((req, res) => {
+        db.getOwnIngredients(req.params.email)
+            .then(rivit => {
+                res.status(200).send(rivit);
+            })
+            .catch(e => {
+                console.log(e.message);
+                res.status(400).send({virheviesti: e.message});
+            });
+    })
+
+router.route('/user')
+    .post((req, res) => {
+        const newUser = req.body;
+        db.addUser(newUser)  // Promise
+            .then(uid => {
+                console.log('Tässä on addUserin iidee' + uid)
+                const locurl = url.format({
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    pathname: req.originalUrl + "/" + uid
+                });
+                res.setHeader('Location', locurl);
+                newUser.id = uid;
+                res.status(201).send(newUser.id);
+            })
+            .catch(e=> {
+                res.status(400).send({virhe_recipe: e.message})
+            })
+    })
 
 router.route('/cabinet')
     .get((req, res) => {

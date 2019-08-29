@@ -11,7 +11,7 @@ function getDrinks() {
                     'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
                     'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
                     'GROUP BY \n' +
-                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.id')
+                    'd.id, d.drink_name, d.drink_instructions ORDER BY d.drink_name')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -221,6 +221,42 @@ function addIngredient(newIngredient) {
         );
 }
 
+function addUser(u) {
+    const insertStmt = "INSERT INTO users(user_email) VALUES($1) RETURNING uid";
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [u.user_email])
+                .then((answer) => {
+                    client.release();
+                    return answer.rows[0].id;
+                })
+                .catch(e => {
+                    console.log("addUser virhe: " + e.message);
+                    throw new Error(e.message)
+                })
+        })
+}
+
+function getOwnIngredients(u) {
+    const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
+    const insertSmt = "SELECT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1";
+    return pool.connect()
+        .then(client => {
+            return client.query(idhaku, [u])
+                .then((data) => {
+                    return client.query(insertSmt, [data.rows[0].uid])
+                        .then((answer) => {
+                            client.release();
+                            console.log('täsä ' + answer.rows[1].ingredient_name)
+                            return answer.rows
+                        })
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
 module.exports = {
     getDrinks,
     addDrink,
@@ -232,5 +268,7 @@ module.exports = {
     addDrinkRecipe,
     getIngredients,
     getIngredientByName,
-    addIngredient
+    addIngredient,
+    addUser,
+    getOwnIngredients
 };

@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS drinks CASCADE;
 DROP TABLE IF EXISTS drinks_recipes;
 DROP TABLE IF EXISTS drinks_ingredients CASCADE;
-DROP TABLE IF EXISTS cabinet CASCADE;
-DROP TABLE IF EXISTS users;
+
 
 
 -- drinkin nimi ja reseptikuvaus.
@@ -27,16 +26,6 @@ CREATE TABLE drinks_recipes (
                                 FOREIGN KEY (ingredients_id) REFERENCES drinks_ingredients(id) ON DELETE CASCADE
 );
 
-CREATE TABLE users (
-                       uid SERIAL PRIMARY KEY,
-                       user_email VARCHAR(255) NOT NULL
-);
-CREATE TABLE cabinet (
-                        users_id INTEGER NOT NULL,
-                        ingredients_id INTEGER NOT NULL,
-                        FOREIGN KEY (users_id) REFERENCES users(uid) ON DELETE CASCADE,
-                        FOREIGN KEY (ingredients_id) REFERENCES drinks_ingredients(id) ON DELETE CASCADE
-);
 
 -- Tallenna alkoholit yms raaka-aineet.
 INSERT INTO drinks_ingredients (ingredient_name) VALUES
@@ -1062,3 +1051,8 @@ VALUES
 ((SELECT id from drinks WHERE drink_name='Zombie'), (SELECT id from drinks_ingredients WHERE ingredient_name='Grenadine syrup'), 0.5, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Zombie'), (SELECT id from drinks_ingredients WHERE ingredient_name='Angostura'), 1, 'dash'),
 ((SELECT id from drinks WHERE drink_name='Zombie'), (SELECT id from drinks_ingredients WHERE ingredient_name='Lime wedge'), 1, 'piece');
+
+INSERT INTO users (user_email) VALUES ('nuutt@me.fi');
+INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,1);
+INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,2);
+INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,3);
