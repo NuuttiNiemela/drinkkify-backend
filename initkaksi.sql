@@ -302,7 +302,8 @@ VALUES
 ('White Lady', 'Shake hard and fine strain.'),
 ('White Martini', 'Shake hard and fine strain.'),
 ('White Russian', 'Build in glass.'),
-('Zombie', 'Shake hard and strain. Some recipes add Overproof rum and Absinthe – try if you dare!');
+('Zombie', 'Shake hard and strain. Some recipes add Overproof rum and Absinthe – try if you dare!'),
+('Kossu-vissy', 'Shake and enjoy!');
 
 -- Tallenna reseptit.
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
@@ -340,6 +341,11 @@ INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingre
 VALUES
 ((SELECT id from drinks WHERE drink_name='Vodka-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Vodka'), 10, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Vodka-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Soda'), 10, 'cl');
+
+INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
+VALUES
+((SELECT id from drinks WHERE drink_name='Kossu-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Vodka'), 4, 'cl'),
+((SELECT id from drinks WHERE drink_name='Kossu-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Soda'), 16, 'cl');
 
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
 VALUES
@@ -1052,7 +1058,5 @@ VALUES
 ((SELECT id from drinks WHERE drink_name='Zombie'), (SELECT id from drinks_ingredients WHERE ingredient_name='Angostura'), 1, 'dash'),
 ((SELECT id from drinks WHERE drink_name='Zombie'), (SELECT id from drinks_ingredients WHERE ingredient_name='Lime wedge'), 1, 'piece');
 
-INSERT INTO users (user_email) VALUES ('nuutt@me.fi');
-INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,1);
-INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,2);
-INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,3);
+
+

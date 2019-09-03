@@ -11,3 +11,6 @@ CREATE TABLE cabinet (
                          FOREIGN KEY (users_id) REFERENCES users(uid) ON DELETE CASCADE,
                          FOREIGN KEY (ingredients_id) REFERENCES drinks_ingredients(id) ON DELETE CASCADE
 );
+
+INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,63);
+INSERT INTO cabinet (users_id, ingredients_id) VALUES (1,161);
