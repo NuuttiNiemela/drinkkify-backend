@@ -173,6 +173,32 @@ router.route('/cabinetverify/:email',verifyToken)
                 res.status(400).send({virheviesti: e.message});
             });
     })
+    .post((req, res) => {
+        const newOwnIngredient = req.body;
+        db.addToCabinet(req.params.email, newOwnIngredient)
+            .then(id => {
+                console.log('Tässä ingredient id: ' + id)
+                const locurl = url.format({
+                    protocol: req.protocol,
+                    host: req.get('host'),
+                    pathname: req.originalUrl + "/" + id
+                });
+                res.setHeader('Location', locurl);
+                newOwnIngredient.id = id;
+                res.status(201).send(newOwnIngredient.id);
+            })
+            .catch(e=> {
+                res.status(400).send({virheviesti: e.message})
+            })
+    })
+
+router.route('/cabinetverify/del')
+    .delete((req, res) => {
+        const email = req.query.email;
+        const id = req.query.id;
+        const num = db.removeFromCabin(email,id).then((value) => {res.status(200).send(value)})
+        console.log(num)
+    })
 
 router.route('/user')
     .post((req, res) => {

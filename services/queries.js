@@ -206,7 +206,7 @@ function addIngredient(newIngredient) {
     const insertStmt = "INSERT INTO drinks_ingredients(id, ingredient_name) VALUES($1, $2) RETURNING id";
     return pool.connect()
         .then(client => {
-                return client.query(insertStmt, [newIngderient.ingredient_name])
+                return client.query(insertStmt, [newIngredient.ingredient_name])
                     .then((vastaus) => {
                             client.release();
                             console.log("Insertoitu vastaus", vastaus.rows);
@@ -257,6 +257,46 @@ function getOwnIngredients(u) {
         })
 }
 
+function addToCabinet(email, ingredient) {
+    const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
+    const insertSmt = "INSERT INTO cabinet(users_id, ingredients_id) VALUES ($1, $2) RETURNING users_id;"
+    return pool.connect()
+        .then(client => {
+            return client.query(idhaku, [email])
+                .then((data) => {
+                    return client.query(insertSmt, [data.rows[0].uid, ingredient.id])
+                        .then((answer) => {
+                            client.release();
+                            return answer.rows[0].id;
+                        })
+                })
+                .catch(e => {
+                    console.log('addToCabinet virhe: ' + e.message)
+                    throw new Error(e.message);
+                })
+        })
+}
+
+function removeFromCabin(email, id) {
+    const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
+    const insertSmt = "DELETE FROM cabinet WHERE users_id = $1 AND ingredients_id = $2;"
+    return pool.connect()
+        .then(client => {
+            return client.query(idhaku, [email])
+                .then((data) => {
+                    return client.query(insertSmt, [data.rows[0].uid, id])
+                        .then((answer) => {
+                            client.release();
+                            return answer.rows[0];
+                        })
+                })
+                .catch(e => {
+                    console.log('removeFromCabinet virhe: ' + e.message)
+                    throw new Error(e.message);
+                })
+        })
+}
+
 module.exports = {
     getDrinks,
     addDrink,
@@ -270,5 +310,7 @@ module.exports = {
     getIngredientByName,
     addIngredient,
     addUser,
-    getOwnIngredients
+    getOwnIngredients,
+    addToCabinet,
+    removeFromCabin
 };
