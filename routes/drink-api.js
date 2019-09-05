@@ -200,6 +200,19 @@ router.route('/cabinetverify/del')
         console.log(num)
     })
 
+router.route('/cabinetverify/search/drinkkify')
+    .get((req, res) => {
+        const email = req.query.email;
+        db.drinkkify(email)
+            .then(rivit => {
+                res.status(200).send(rivit);
+            })
+            .catch(e => {
+                console.log(e.message);
+                res.status(400).send({virheviesti: e.message});
+            })
+    })
+
 router.route('/user')
     .post((req, res) => {
         const newUser = req.body;
@@ -242,7 +255,6 @@ router.route('/cabinet')
                 res.status(400).send({adding_ingredient_to_cabinet_: e.message})
             })
     });
-
 
 
 module.exports = router;

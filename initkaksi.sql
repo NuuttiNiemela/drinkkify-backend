@@ -335,7 +335,7 @@ VALUES
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
 VALUES
 ((SELECT id from drinks WHERE drink_name='Kossu-Kola'), (SELECT id from drinks_ingredients WHERE ingredient_name='Koskenkorva'), 10, 'cl'),
-((SELECT id from drinks WHERE drink_name='Kossu-Kola'), (SELECT id from drinks_ingredients WHERE ingredient_name='Soda'), 20, 'cl');
+((SELECT id from drinks WHERE drink_name='Kossu-Kola'), (SELECT id from drinks_ingredients WHERE ingredient_name='Coke'), 20, 'cl');
 
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
 VALUES
@@ -344,7 +344,7 @@ VALUES
 
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
 VALUES
-((SELECT id from drinks WHERE drink_name='Kossu-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Vodka'), 4, 'cl'),
+((SELECT id from drinks WHERE drink_name='Kossu-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Koskenkorva'), 4, 'cl'),
 ((SELECT id from drinks WHERE drink_name='Kossu-vissy'), (SELECT id from drinks_ingredients WHERE ingredient_name='Soda'), 16, 'cl');
 
 INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit)
