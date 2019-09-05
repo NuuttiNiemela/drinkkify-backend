@@ -242,6 +242,7 @@ function getOwnIngredients(u) {
     const insertSmt = "SELECT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1";
     return pool.connect()
         .then(client => {
+            console.log('jeah ' + u)
             return client.query(idhaku, [u])
                 .then((data) => {
                     return client.query(insertSmt, [data.rows[0].uid])
@@ -297,6 +298,65 @@ function removeFromCabin(email, id) {
         })
 }
 
+async function drinkkify(email) {
+    const distinct = (value, index, self) => {
+        return self.indexOf(value) === index
+    }
+    const drinkkify = []
+    const drinkkifythree = []
+    const ingredients = await getOwnIngredients(email);
+    console.log('drinkkify ' + ingredients[0].ingredients_id)
+    const drinks = await getDrinks();
+
+    for (let c = 0; c < ingredients.length; c++) {
+        for (let d of drinks) {
+            for (let i of ingredients) {
+                if(d.ingredients.length > 0) {
+                    if (d.ingredients[0].id === i.ingredients_id) {
+                        d.ingredients.shift();
+                    }
+                } else {
+                    drinkkify.push(d)
+                }
+            }
+        }
+    }
+
+    const drinkkifytwo = drinkkify.filter(distinct)
+    for (let apu = 0; apu < drinkkifytwo.length; apu++) {
+        drinkkifythree.push(await getOneDrinkByName(drinkkifytwo[apu].drink_name))
+    }
+
+
+    console.log('Koko: ' + drinkkifytwo.length)
+    return drinkkifythree
+}
+
+function getOneDrinkByName (drinkName){
+    const insertStmt = 'SELECT d.id, d.drink_name, d.drink_instructions, \n' +
+        'json_agg(json_build_object(\'id\', di.id, \'ingredient_name\', di.ingredient_name, \'amount\', dr.ingredients_amount, \'unit\', dr.ingredients_unit)) \n' +
+        'AS ingredients \n' +
+        'FROM drinks_recipes dr \n' +
+        'INNER JOIN drinks_ingredients di ON di.id = dr.ingredients_id \n' +
+        'INNER JOIN drinks d ON d.id = dr.drinks_id \n' +
+        'WHERE d.drink_name ILIKE $1 GROUP BY \n' +
+        'd.id, d.drink_name, d.drink_instructions';
+
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, ['%' + drinkName + '%'])
+                .then((data) => {
+                    client.release();
+                    console.log(data);
+                    return data.rows[0];
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
+
 module.exports = {
     getDrinks,
     addDrink,
@@ -312,5 +372,6 @@ module.exports = {
     addUser,
     getOwnIngredients,
     addToCabinet,
-    removeFromCabin
+    removeFromCabin,
+    drinkkify
 };
