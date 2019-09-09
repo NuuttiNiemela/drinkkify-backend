@@ -201,16 +201,15 @@ function getIngredientByName (ingredientName){
 
 }
 
-function addIngredient(newIngredient) {
-
-    const insertStmt = "INSERT INTO drinks_ingredients(id, ingredient_name) VALUES($1, $2) RETURNING id";
+function addIngredient(newIngredient, email) {
+    const insertStmt = "INSERT INTO drinks_ingredients(ingredient_name, userAdded) VALUES($1, $2) RETURNING id";
     return pool.connect()
         .then(client => {
-                return client.query(insertStmt, [newIngredient.ingredient_name])
-                    .then((vastaus) => {
+                return client.query(insertStmt, [newIngredient.ingredient_name, email])
+                    .then((answer) => {
                             client.release();
-                            console.log("Insertoitu vastaus", vastaus.rows);
-                            return vastaus.rows[0].id;
+                            console.log("Insertoitu vastaus", answer.rows[0]);
+                            return answer.rows[0];
                         }
                     )
                     .catch(e => {
@@ -237,9 +236,9 @@ function addUser(u) {
         })
 }
 
-function getOwnIngredients(u) {
+async function getOwnIngredients(u) {
     const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
-    const insertSmt = "SELECT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1";
+    const insertSmt = "SELECT DISTINCT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1 ORDER BY drinks_ingredients.ingredient_name";
     return pool.connect()
         .then(client => {
             console.log('jeah ' + u)
@@ -261,6 +260,7 @@ function getOwnIngredients(u) {
 function addToCabinet(email, ingredient) {
     const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
     const insertSmt = "INSERT INTO cabinet(users_id, ingredients_id) VALUES ($1, $2) RETURNING users_id;"
+    const doubleSmt = "INSERT INTO cabinet(users_id, ingredients_id) VALUES ($1, $2) ON CONFLICT (users_id, ingredients_id) DO NOTHING RETURNING users_id;"
     return pool.connect()
         .then(client => {
             return client.query(idhaku, [email])
