@@ -122,7 +122,7 @@ router.route('/drinks/haku')
 
 router.route('/ingredients/search')
     .get((req, res) => {
-        db.getIngredientByName(req.query.i_name)
+        db.getIngredientByName(req.query.name)
             .then(response => {
                 console.log(response)
                 res.status(200).send(response);
@@ -146,7 +146,8 @@ router.route('/ingredients')
     })
     .post((req, res)=> {
         const newIngredient = req.body;
-        db.addIngredient(newIngredient)  // Promise
+        const email = req.query.email;
+        db.addIngredient(newIngredient,email)  // Promise
             .then(id => {
                 const locurl = url.format({
                     protocol: req.protocol,

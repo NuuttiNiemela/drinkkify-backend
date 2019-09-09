@@ -12,7 +12,13 @@ CREATE TABLE drinks (
 );
 
 -- raaka-aineet, jossa aine ja id. Eli vodka id 1, gin id 2, rommi id 3 jne...
-CREATE TABLE drinks_ingredients (id SERIAL PRIMARY KEY, ingredient_name VARCHAR(255) NOT NULL);
+CREATE TABLE drinks_ingredients (
+    id SERIAL PRIMARY KEY,
+    ingredient_name VARCHAR(255) NOT NULL,
+    userAdded VARCHAR(255)
+    );
+
+
 
 -- reseptin ainekset, cocktailin nimi on drinks-taulun ID:n lapsi.
 -- ainesosan nimi on drinks_ingredients-taulun ID:n lapsi.
