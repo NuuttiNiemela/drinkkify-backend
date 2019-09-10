@@ -49,7 +49,7 @@ router.route('/drinks')
     .post((req, res)=> {
         const newDrink = req.body;
         console.log(newDrink);
-        db.addDrinkRecipe(newDrink)  // Promise
+        db.addDrinkRecipe2(newDrink)  // Promise
             .then(id => {
                 console.log('Tässä on addRinkRecipen iidee' + id)
                 const locurl = url.format({
