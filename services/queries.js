@@ -119,12 +119,12 @@ async function addDrinkRecipe(newDrink) {
         .catch(e=>{
             throw new Error('Virhe drinkin luonnissa: nimi, resepti..' + e.message)
         })
-
-    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2), 4, \'cl\') RETURNING id';
+    //Täällä LIMIT yhteen
+    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2 LIMIT 1), $3, $4) RETURNING id';
 
     return pool.connect()
         .then(client => {
-            return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%'])
+            return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%', newDrink.ingredientAmount, newDrink.ingredientUnit])
                 .then((data) => {
                     client.release();
                     console.log("Created new drink recipe", data.rows);
