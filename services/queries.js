@@ -119,12 +119,12 @@ async function addDrinkRecipe(newDrink) {
         .catch(e=>{
             throw new Error('Virhe drinkin luonnissa: nimi, resepti..' + e.message)
         })
-
-    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2), 4, \'cl\') RETURNING id';
+    //Täällä LIMIT yhteen
+    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2 LIMIT 1), $3, $4) RETURNING id';
 
     return pool.connect()
         .then(client => {
-            return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%'])
+            return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%', newDrink.ingredientAmount, newDrink.ingredientUnit])
                 .then((data) => {
                     client.release();
                     console.log("Created new drink recipe", data.rows);
@@ -134,6 +134,60 @@ async function addDrinkRecipe(newDrink) {
                     console.log("Creating new drink recipe failed", e.message);
                     throw new Error(e.message);
                 })
+        })
+}
+
+async function addDrinkRecipe2(newDrink) {
+    let drinkId = -1
+    console.log("ingredientin osa: " + newDrink.drink_ingredient0);
+    await addDrink(newDrink)
+        .then(response => {
+            drinkId = response.id;
+        })
+        .catch(e=>{
+            throw new Error('Virhe drinkin luonnissa: nimi, resepti..' + e.message)
+        })
+    //Täällä LIMIT yhteen
+    const insertStmt = 'INSERT INTO drinks_recipes (drinks_id, ingredients_id, ingredients_amount, ingredients_unit) VALUES ((SELECT id from drinks WHERE id = $1), (SELECT id from drinks_ingredients WHERE ingredient_name ILIKE $2 LIMIT 1), $3, $4) RETURNING id';
+
+    return pool.connect()
+        .then(client =>
+        {
+                return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient0 + '%', newDrink.ingredientAmount0, newDrink.ingredientUnit0])
+                    .then((data) => {
+                        console.log("Created new drink recipe", data.rows);
+                        return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient1 + '%', newDrink.ingredientAmount1, newDrink.ingredientUnit1])
+                            .then((data) => {
+                                console.log("Created new drink recipe", data.rows);
+                                return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient2 + '%', newDrink.ingredientAmount2, newDrink.ingredientUnit2])
+                                    .then((data) => {
+                                        console.log("Created new drink recipe", data.rows);
+                                        return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient3 + '%', newDrink.ingredientAmount3, newDrink.ingredientUnit3])
+                                            .then((data) => {
+                                                console.log("Created new drink recipe", data.rows);
+                                                return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient4 + '%', newDrink.ingredientAmount4, newDrink.ingredientUnit4])
+                                                    .then((data) => {
+                                                        console.log("Created new drink recipe", data.rows);
+                                                        return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient5 + '%', newDrink.ingredientAmount5, newDrink.ingredientUnit5])
+                                                            .then((data) => {
+                                                                console.log("Created new drink recipe", data.rows);
+                                                                return client.query(insertStmt,[drinkId, '%' + newDrink.drink_ingredient6 + '%', newDrink.ingredientAmount6, newDrink.ingredientUnit6])
+                                    .then((data) => {
+                                        client.release();
+                                        console.log("Created new drink recipe", data.rows);
+                                        return data.rows[0];
+                                    })
+                                                            })
+                                                    })
+                                            })
+                                    })
+                            })
+
+                    })
+                    .catch(e => {
+                        console.log("Creating new drink recipe failed", e.message);
+                        throw new Error(e.message);
+                    })
         })
 }
 
@@ -366,6 +420,7 @@ module.exports = {
     getDrinkByName,
     //getDrinksWithJoin,
     addDrinkRecipe,
+    addDrinkRecipe2,
     getIngredients,
     getIngredientByName,
     addIngredient,
