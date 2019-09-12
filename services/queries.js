@@ -139,7 +139,6 @@ async function addDrinkRecipe(newDrink) {
 
 async function addDrinkRecipe2(newDrink) {
     let drinkId = -1
-    console.log("ingredientin osa: " + newDrink.drink_ingredient0);
     await addDrink(newDrink)
         .then(response => {
             drinkId = response.id;
@@ -153,23 +152,47 @@ async function addDrinkRecipe2(newDrink) {
     return pool.connect()
         .then(client =>
         {
+            if (newDrink.drink_ingredient0 === '' && newDrink.ingredientSearch0 === '') {
+                client.release()
+                return new Error('Adding drink failed')
+            } else if(newDrink.drink_ingredient0 === '') {
+                newDrink.drink_ingredient0 = newDrink.ingredientSearch0;
+            }
                 return client.query(insertStmt, [drinkId, newDrink.drink_ingredient0 , newDrink.ingredientAmount0, newDrink.ingredientUnit0])
                     .then((data) => {
+                        if (newDrink.drink_ingredient1 === '') {
+                            newDrink.drink_ingredient1 = newDrink.ingredientSearch1;
+                        }
                         console.log("Created new drink recipe", data.rows);
                         return client.query(insertStmt,[drinkId, newDrink.drink_ingredient1, newDrink.ingredientAmount1, newDrink.ingredientUnit1])
                             .then((data) => {
+                                if (newDrink.drink_ingredient2 === '') {
+                                    newDrink.drink_ingredient2 = newDrink.ingredientSearch2;
+                                }
                                 console.log("Created new drink recipe", data.rows);
                                 return client.query(insertStmt,[drinkId, newDrink.drink_ingredient2, newDrink.ingredientAmount2, newDrink.ingredientUnit2])
                                     .then((data) => {
+                                        if (newDrink.drink_ingredient3 === '') {
+                                            newDrink.drink_ingredient3 = newDrink.ingredientSearch3;
+                                        }
                                         console.log("Created new drink recipe", data.rows);
                                         return client.query(insertStmt,[drinkId, newDrink.drink_ingredient3, newDrink.ingredientAmount3, newDrink.ingredientUnit3])
                                             .then((data) => {
+                                                if (newDrink.drink_ingredient4 === '') {
+                                                    newDrink.drink_ingredient4 = newDrink.ingredientSearch4;
+                                                }
                                                 console.log("Created new drink recipe", data.rows);
                                                 return client.query(insertStmt,[drinkId, newDrink.drink_ingredient4, newDrink.ingredientAmount4, newDrink.ingredientUnit4])
                                                     .then((data) => {
+                                                        if (newDrink.drink_ingredient5 === '') {
+                                                            newDrink.drink_ingredient5 = newDrink.ingredientSearch5;
+                                                        }
                                                         console.log("Created new drink recipe", data.rows);
                                                         return client.query(insertStmt,[drinkId, newDrink.drink_ingredient5, newDrink.ingredientAmount5, newDrink.ingredientUnit5])
                                                             .then((data) => {
+                                                                if (newDrink.drink_ingredient6 === '') {
+                                                                    newDrink.drink_ingredient6 = newDrink.ingredientSearch6;
+                                                                }
                                                                 console.log("Created new drink recipe", data.rows);
                                                                 return client.query(insertStmt,[drinkId, newDrink.drink_ingredient6, newDrink.ingredientAmount6, newDrink.ingredientUnit6])
                                     .then((data) => {
