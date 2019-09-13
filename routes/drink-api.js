@@ -6,13 +6,11 @@ const admin = require('../firebase-admin/admin');
 
 async function verifyToken(req, res, next) {
     const idToken = req.headers.authorization;
-
+    if(!idToken) return res.status(401).send("You're not logged in!");
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
-
         if (decodedToken) {
             req.body.uid = decodedToken.uid;
-
             return next();
         } else {
             return res.status(401).send("You're not logged in!");
@@ -163,8 +161,8 @@ router.route('/ingredients')
             })
     });
 
-router.route('/cabinetverify/:email',verifyToken)
-    .get((req, res) => {
+router.route('/cabinetverify/:email')
+    .get(verifyToken, (req, res) => {
         db.getOwnIngredients(req.params.email)
             .then(rivit => {
                 res.status(200).send(rivit);
