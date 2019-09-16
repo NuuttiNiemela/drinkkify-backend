@@ -142,19 +142,19 @@ router.route('/ingredients')
                 res.status(400).send({virheviesti: e.message});
             });
     })
-    .post((req, res)=> {
+    .post(verifyToken, async (req, res)=> {
         const newIngredient = req.body;
         const email = req.query.email;
-        db.addIngredient(newIngredient,email)  // Promise
-            .then(id => {
+        await db.addIngredient(newIngredient,email)  // Promise
+            .then(response => {
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
-                    pathname: req.originalUrl + "/" + id
+                    pathname: req.originalUrl + "/" + response.id
                 });
                 res.setHeader('Location', locurl);
-                newIngredient.id = id;
-                res.status(201).send(newIngredient.id);
+                newIngredient.id = response.id;
+                res.status(201).send(response)
             })
             .catch(e=> {
                 res.status(400).send({virhe: e.message})
@@ -174,6 +174,7 @@ router.route('/cabinetverify/:email')
     })
     .post((req, res) => {
         const newOwnIngredient = req.body;
+        console.log(newOwnIngredient)
         db.addToCabinet(req.params.email, newOwnIngredient)
             .then(id => {
                 console.log('Tässä ingredient id: ' + id)
@@ -192,7 +193,7 @@ router.route('/cabinetverify/:email')
     })
 
 router.route('/cabinetverify/del')
-    .delete((req, res) => {
+    .delete(verifyToken, (req, res) => {
         const email = req.query.email;
         const id = req.query.id;
         const num = db.removeFromCabin(email,id).then((value) => {res.status(200).send(value)})
@@ -200,7 +201,7 @@ router.route('/cabinetverify/del')
     })
 
 router.route('/cabinetverify/search/drinkkify')
-    .get((req, res) => {
+    .get(verifyToken, (req, res) => {
         const email = req.query.email;
         db.drinkkify(email)
             .then(rivit => {
