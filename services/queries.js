@@ -251,7 +251,7 @@ function deleteDrink(id) {
 function getIngredients() {
     return pool.connect()
         .then(client => {
-                return client.query('SELECT * FROM drinks_ingredients')
+                return client.query('SELECT * FROM drinks_ingredients ORDER BY ingredient_name')
                     .then((data) => {
                             client.release();
                             return data.rows;
@@ -278,23 +278,28 @@ function getIngredientByName (ingredientName){
 
 }
 
-function addIngredient(newIngredient, email) {
-    const insertStmt = "INSERT INTO drinks_ingredients(ingredient_name, userAdded) VALUES($1, $2) RETURNING id";
-    return pool.connect()
-        .then(client => {
-                return client.query(insertStmt, [newIngredient.ingredient_name, email])
-                    .then((answer) => {
-                            client.release();
-                            console.log("Insertoitu vastaus", answer.rows[0]);
-                            return answer.rows[0];
-                        }
-                    )
-                    .catch(e => {
-                        console.log("queries:post virhe", e.message);
-                        throw new Error(e.message)
-                    })
-            }
-        );
+async function addIngredient(newIngredient, email) {
+    let list = await getIngredientByName(newIngredient.ingredient_name)
+    if(list.length > 0) {
+        throw new Error('Ingredient already exists in the database')
+    } else {
+        const insertStmt = "INSERT INTO drinks_ingredients(ingredient_name, userAdded) VALUES($1, $2) RETURNING id";
+        return pool.connect()
+            .then(client => {
+                    return client.query(insertStmt, [newIngredient.ingredient_name, email])
+                        .then((answer) => {
+                                client.release();
+                                console.log("Insertoitu vastaus", answer.rows[0]);
+                                return answer.rows[0];
+                            }
+                        )
+                        .catch(e => {
+                            console.log("queries:post virhe", e.message);
+                            throw new Error(e.message)
+                        })
+                }
+            );
+    }
 }
 
 function addUser(u) {
