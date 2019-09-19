@@ -318,6 +318,22 @@ function addUser(u) {
         })
 }
 
+function editUser(oldEmail, newUser) {
+    const insertStmt = "UPDATE users SET user_email=$1 WHERE user_email=$2"
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [newUser.user_email, oldEmail])
+                .then((answer) => {
+                    client.release();
+                    return answer.rows;
+                })
+                .catch(e => {
+                    console.log("editUser virhe: " + e.message)
+                    throw new Error(e.message)
+                })
+        })
+}
+
 async function getOwnIngredients(u) {
     const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
     const insertSmt = "SELECT DISTINCT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1 ORDER BY drinks_ingredients.ingredient_name";
@@ -453,8 +469,9 @@ module.exports = {
     getIngredientByName,
     addIngredient,
     addUser,
+    editUser,
     getOwnIngredients,
     addToCabinet,
     removeFromCabin,
-    drinkkify
+    drinkkify,
 };
