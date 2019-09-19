@@ -232,6 +232,18 @@ router.route('/user')
                 res.status(400).send({virhe_recipe: e.message})
             })
     })
+    .put((req, res) => {
+        const newUser = req.body;
+        const oldEmail = req.query.email;
+        db.editUser(oldEmail, newUser)
+            .then(rivit => {
+                res.status(200).send(rivit)
+            })
+            .catch( e => {
+                console.log(e.message);
+                res.status(400).send({virhe: e.message})
+            });
+    })
 
 router.route('/cabinet')
     .get((req, res) => {
