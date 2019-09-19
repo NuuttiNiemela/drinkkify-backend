@@ -318,8 +318,29 @@ function addUser(u) {
         })
 }
 
-function editUser(oldEmail, newUser) {
+function getUser(u) {
+    const insertStmt = "SELECT * FROM users WHERE user_email=$1"
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [u])
+                .then((answer) => {
+                    client.release();
+                    return answer.rows;
+                })
+                .catch(e => {
+                    console.log("editUser virhe: " + e.message)
+                    throw new Error(e.message)
+                })
+        })
+
+}
+
+async function editUser(oldEmail, newUser) {
     const insertStmt = "UPDATE users SET user_email=$1 WHERE user_email=$2"
+    let list = await getUser(newUser.user_email)
+    if(list.length > 0) {
+        throw new Error('Email is already in use!')
+    } else {
     return pool.connect()
         .then(client => {
             return client.query(insertStmt, [newUser.user_email, oldEmail])
@@ -332,6 +353,7 @@ function editUser(oldEmail, newUser) {
                     throw new Error(e.message)
                 })
         })
+    }
 }
 
 async function getOwnIngredients(u) {
@@ -339,13 +361,11 @@ async function getOwnIngredients(u) {
     const insertSmt = "SELECT DISTINCT cabinet.users_id, cabinet.ingredients_id, drinks_ingredients.ingredient_name FROM cabinet INNER JOIN drinks_ingredients ON cabinet.ingredients_id = drinks_ingredients.id WHERE users_id = $1 ORDER BY drinks_ingredients.ingredient_name";
     return pool.connect()
         .then(client => {
-            console.log('jeah ' + u)
             return client.query(idhaku, [u])
                 .then((data) => {
                     return client.query(insertSmt, [data.rows[0].uid])
                         .then((answer) => {
                             client.release();
-                            console.log('täsä ' + answer.rows[1].ingredient_name)
                             return answer.rows
                         })
                 })
