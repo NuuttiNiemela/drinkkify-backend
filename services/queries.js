@@ -78,7 +78,6 @@ function getDrinkByName (drinkName){
             return client.query(insertStmt, ['%' + drinkName + '%'])
                 .then((data) => {
                     client.release();
-                    console.log(data);
                     return data.rows;
                 })
                 .catch(e => {
@@ -96,12 +95,10 @@ function addDrink(newdrink) {
                 return client.query(insertStmt, [newdrink.drink_name, newdrink.drink_instructions])
                     .then((data) => {
                             client.release();
-                            console.log("data rows: ", data.rows[0]);
                             return data.rows[0];
                         }
                     )
                     .catch(e => {
-                        console.log(newdrink)
                         console.log("queries:post virhe", e.message);
                         throw new Error(e.message)
                     })
@@ -110,8 +107,7 @@ function addDrink(newdrink) {
 }
 
 async function addDrinkRecipe(newDrink) {
-    let drinkId = -1
-    console.log("ingredientin osa: " + newDrink.drink_ingredient);
+    let drinkId = -1;
     await addDrink(newDrink)
         .then(response => {
             drinkId = response.id;
@@ -127,7 +123,6 @@ async function addDrinkRecipe(newDrink) {
             return client.query(insertStmt, [drinkId, '%' + newDrink.drink_ingredient + '%', newDrink.ingredientAmount, newDrink.ingredientUnit])
                 .then((data) => {
                     client.release();
-                    console.log("Created new drink recipe", data.rows);
                     return data.rows[0];
                 })
                 .catch(e=> {
@@ -289,7 +284,6 @@ async function addIngredient(newIngredient, email) {
                     return client.query(insertStmt, [newIngredient.ingredient_name, email])
                         .then((answer) => {
                                 client.release();
-                                console.log("Insertoitu vastaus", answer.rows[0]);
                                 return answer.rows[0];
                             }
                         )
@@ -378,7 +372,6 @@ async function getOwnIngredients(u) {
 function addToCabinet(email, ingredient) {
     const idhaku = "SELECT uid FROM users WHERE user_email ILIKE $1";
     const insertSmt = "INSERT INTO cabinet(users_id, ingredients_id) VALUES ($1, $2) RETURNING users_id;"
-    const doubleSmt = "INSERT INTO cabinet(users_id, ingredients_id) VALUES ($1, $2) ON CONFLICT (users_id, ingredients_id) DO NOTHING RETURNING users_id;"
     return pool.connect()
         .then(client => {
             return client.query(idhaku, [email])
@@ -423,7 +416,6 @@ async function drinkkify(email) {
     const drinkkify = []
     const drinkkifythree = []
     const ingredients = await getOwnIngredients(email);
-    console.log('drinkkify ' + ingredients[0].ingredients_id)
     const drinks = await getDrinks();
 
     for (let c = 0; c < ingredients.length; c++) {
@@ -465,7 +457,6 @@ function getOneDrinkByName (drinkName){
             return client.query(insertStmt, ['%' + drinkName + '%'])
                 .then((data) => {
                     client.release();
-                    console.log(data);
                     return data.rows[0];
                 })
                 .catch(e => {
