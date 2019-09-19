@@ -196,8 +196,9 @@ router.route('/cabinetverify/del')
     .delete(verifyToken, (req, res) => {
         const email = req.query.email;
         const id = req.query.id;
-        const num = db.removeFromCabin(email,id).then((value) => {res.status(200).send(value)})
-        console.log(num)
+        db.removeFromCabin(email,id)
+            .then((value) => {res.status(200).send(value)})
+            .catch((e) =>{res.status(400).send({virheviesti: e.message})})
     })
 
 router.route('/cabinetverify/search/drinkkify')
