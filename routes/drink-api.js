@@ -46,10 +46,8 @@ router.route('/drinks')
 
     .post((req, res)=> {
         const newDrink = req.body;
-        console.log(newDrink);
         db.addDrinkRecipe2(newDrink)  // Promise
             .then(id => {
-                console.log('Tässä on addRinkRecipen iidee' + id)
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
@@ -105,10 +103,8 @@ router.route('/drinks/actionsbyid/:id')
 router.route('/drinks/haku')
     .get((req, res) => {
         const drinkName = req.query.name;
-        console.log(drinkName);
         db.getDrinkByName(drinkName)
             .then(response => {
-                console.log(response)
                 res.status(200).send(response);
             })
             .catch( e => {
@@ -122,7 +118,6 @@ router.route('/ingredients/search')
     .get((req, res) => {
         db.getIngredientByName(req.query.name)
             .then(response => {
-                console.log(response)
                 res.status(200).send(response);
             })
             .catch( e => {
@@ -174,10 +169,8 @@ router.route('/cabinetverify/:email')
     })
     .post((req, res) => {
         const newOwnIngredient = req.body;
-        console.log(newOwnIngredient)
         db.addToCabinet(req.params.email, newOwnIngredient)
             .then(id => {
-                console.log('Tässä ingredient id: ' + id)
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
@@ -219,7 +212,6 @@ router.route('/user')
         const newUser = req.body;
         db.addUser(newUser)  // Promise
             .then(uid => {
-                console.log('Tässä on addUserin iidee' + uid)
                 const locurl = url.format({
                     protocol: req.protocol,
                     host: req.get('host'),
