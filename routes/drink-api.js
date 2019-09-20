@@ -261,6 +261,29 @@ router.route('/cabinet')
             })
     });
 
+router.route('/ingredients/user')
+    .get((req, res) => {
+        const email = req.query.email
+        db.getUserIngredients(email)
+            .then(rivit => {
+                res.status(200).send(rivit);
+            })
+            .catch(e=> {
+                res.status(400).send({editing_ingredients: e.message})
+            })
+    })
+    .put((req, res) => {
+        const email = req.query.email;
+        const newIngredient = req.body;
+        db.editUserIngredient(newIngredient.id, newIngredient.ingredient_name)
+            .then(rivit => {
+                res.status(200).send(rivit);
+            })
+            .catch(e => {
+                res.status(400).send('Error: ' + e.message)
+            })
+    })
+
 
 module.exports = router;
 

@@ -465,6 +465,36 @@ function getOneDrinkByName (drinkName){
         })
 }
 
+function getUserIngredients(email) {
+    const insertStmt = "SELECT * FROM drinks_ingredients WHERE useradded=$1";
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [email])
+                .then((data) => {
+                    client.release();
+                    return data.rows;
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
+function editUserIngredient(i, n) {
+    const insertStmt = "UPDATE drinks_ingredients SET ingredient_name=$1 WHERE id=$2";
+    return pool.connect()
+        .then(client => {
+            return client.query(insertStmt, [n, i])
+                .then((data) => {
+                    client.release()
+                        return data.rows;
+                })
+                .catch(e => {
+                    throw new Error(e.message)
+                })
+        })
+}
+
 
 module.exports = {
     getDrinks,
@@ -485,4 +515,6 @@ module.exports = {
     addToCabinet,
     removeFromCabin,
     drinkkify,
+    getUserIngredients,
+    editUserIngredient,
 };
