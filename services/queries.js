@@ -275,13 +275,15 @@ function getIngredientByName (ingredientName){
 
 async function addIngredient(newIngredient, email) {
     let list = await getIngredientByName(newIngredient.ingredient_name)
+    let user = await getUser(email)
+    console.log(user)
     if(list.length > 0) {
         throw new Error('Ingredient already exists in the database')
     } else {
         const insertStmt = "INSERT INTO drinks_ingredients(ingredient_name, userAdded) VALUES($1, $2) RETURNING id";
         return pool.connect()
             .then(client => {
-                    return client.query(insertStmt, [newIngredient.ingredient_name, email])
+                    return client.query(insertStmt, [newIngredient.ingredient_name, user[0].uid])
                         .then((answer) => {
                                 client.release();
                                 return answer.rows[0];
@@ -465,11 +467,12 @@ function getOneDrinkByName (drinkName){
         })
 }
 
-function getUserIngredients(email) {
+async function getUserIngredients(email) {
     const insertStmt = "SELECT * FROM drinks_ingredients WHERE useradded=$1";
+    let user = await getUser(email)
     return pool.connect()
         .then(client => {
-            return client.query(insertStmt, [email])
+            return client.query(insertStmt, [user[0].uid])
                 .then((data) => {
                     client.release();
                     return data.rows;
