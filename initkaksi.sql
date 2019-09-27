@@ -15,7 +15,8 @@ CREATE TABLE drinks (
 CREATE TABLE drinks_ingredients (
     id SERIAL PRIMARY KEY,
     ingredient_name VARCHAR(255) NOT NULL,
-    userAdded VARCHAR(255)
+    userAdded INTEGER,
+    FOREIGN KEY (userAdded) REFERENCES users(uid) ON DELETE CASCADE
     );
 
 
